@@ -8,7 +8,7 @@ export default function NavBar() {
       <div className="flex flex-1 items-center gap-2">
         <img src="/logo.png" className="h-10 w-10" />
         <div className="text-gray-300 text-xl font-medium">
-          HyperFiles
+          HyperDrive
         </div>
       </div>
 
