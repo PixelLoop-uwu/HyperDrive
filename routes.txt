@@ -1,0 +1,54 @@
+Pages:
+  /login
+  /register
+
+  /home
+  /home/favorite
+  /home/trash
+  /home/settings
+
+  /home/folder
+    ?path=/
+  /home/file
+    ?path=
+  /search
+    ?q=
+
+  /share/<id>
+
+  /404
+
+
+Endpoints:       Method:
+  /auth/login     POST
+  /auth/refresh   POST
+  /auth/logout    POST
+  /auth/register  GET
+  /profile        GET
+
+  /list           GET
+    ?path=/
+
+  /meta           GET
+    ?path=
+
+  /mkdir          POST
+  /rename         PATCH
+  /copy           PATCH
+  /move           PATCH
+
+  /upload         POST     
+  /preview        GET      
+
+  /trash          POST 
+  /trash/restore  POST
+  /trash/clear    DELETE
+
+  /search         GET
+    ?q=
+
+  /health         GET
+  /usage          GET
+
+  /share          GET
+    ?id=
