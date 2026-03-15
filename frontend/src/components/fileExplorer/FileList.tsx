@@ -1,64 +1,64 @@
 import type { FileListProps, FileItem } from "@/types/fileExplorer"
-import type { ContextMenuState } from "@/types/contextMenu"
+import { useSelectedFilesStore } from "@/store/selectedFileItems"
+import { useContextMenuStore } from "@/store/contextMenu"
+import { useFilesStore } from "@/store/fileExplorer"
+
 import { getFileIcon } from "@/utils/fileIcon"
 import { formatSize } from "@/utils/sizeFormat"
-import { ContextMenu } from "./ContextMeneu"
 
 import { IoStar, IoStarOutline } from "react-icons/io5"
-import { useState, useEffect } from "react"
+import { motion } from "framer-motion";
 import dayjs from "dayjs"
 
-export default function FileList({ files, path, selectedFileIds, setSelectedFileIds }: FileListProps) {
-  const [contextMenu, setContextMenu] = useState<ContextMenuState>({
-    visible: false,
-    x: 0,
-    y: 0,
-    file: null
-  })
+export default function FileList({ sortedFiles }: FileListProps) {
+  const { selected, addSelectedItems, setSelectedItems } = useSelectedFilesStore()
+  const { tuneContextMenu, toggleContextMenu} = useContextMenuStore()
+  const { starToggle } = useFilesStore()
 
 
-  useEffect(() => {
-    const close = () =>
-      setContextMenu(prev => ({ ...prev, visible: false }))
+  function selectHandler (event: React.MouseEvent<HTMLDivElement>, fileItem: FileItem) {
+    if (sortedFiles === undefined) return 
 
-    window.addEventListener("click", close)
+    if (event.ctrlKey || event.metaKey) {
+      addSelectedItems([fileItem])
 
-    return () => window.removeEventListener("click", close)
-  }, [])
-  
-
-  const handleContextMenu = (
-    event: React.MouseEvent,
-    file: FileItem | null
-  ) => {
-    event.preventDefault()
-    file && setSelectedFileIds([file.id])
-
-    setContextMenu({
-      visible: true,
-      x: event.clientX,
-      y: event.clientY,
-      file: file
-  })}
-
-
-  function selectHandler (event: React.MouseEvent<HTMLDivElement>, file: FileItem) {
-    if (event.shiftKey) {
-      setSelectedFileIds(prev => [...prev, file.id])
-      
     } else {
-      setSelectedFileIds([file.id])
-  }}
+      setSelectedItems([fileItem])
+    }
+  }
+
+  function starHandler (file: FileItem) {
+    setSelectedItems([file])
+    starToggle(file.id)
+  }
+
+
+  function openContextMenu (e: React.MouseEvent<HTMLDivElement>, type: "file" | "folder" | "empty", fileItem?: FileItem) {
+    e.preventDefault() 
+    e.stopPropagation()
+
+    const x = e.clientX
+    const y = e.clientY
+
+    if (fileItem && !selected.includes(fileItem)) {
+      setSelectedItems([fileItem])
+    }
+    
+    const contextData = type === "empty" ? null : selected;
+    
+    tuneContextMenu(x, y, type, contextData);
+    toggleContextMenu();
+  }
 
 
   function fileTemplate(file: FileItem) {
     return (
       <tr
-        key={file.id} 
+        key={file.id}
         className={`border-b-2 transition-colors duration-200 h-fit
-                  ${selectedFileIds.includes(file.id) ? " border-gray-300" : "hover:border-gray-500 border-transparent"}`}
-        onClick={(e) => selectHandler(e, file)}
-        onContextMenu={(e) => handleContextMenu(e, file)}
+                  ${selected.some(f => f.id === file.id) ? " border-gray-300" : "hover:border-gray-500 border-transparent"}`}
+        onClick={(e) => {e.stopPropagation(); selectHandler(e, file)}}
+        onContextMenu={(e) => openContextMenu(e, file.type, file)}
       >
         <td className="flex items-center gap-2 py-2 min-w-0">
           {getFileIcon(file)} <span className="truncate">{file.name}</span>
@@ -67,9 +67,20 @@ export default function FileList({ files, path, selectedFileIds, setSelectedFile
         <td className="p-2">{dayjs(file.modified).format('DD.MM.YYYY HH:mm')}</td>
         <td className="p-2">{dayjs(file.created).format('DD.MM.YYYY HH:mm')}</td>
         <td className="items-center">
-          <button>
-            {file.stared ? <IoStar size={20} color="#d1d5dc" /> : <IoStarOutline size={20} color="#d1d5dc" />}
-          </button>
+        <motion.button
+          onClick={(e) => { e.stopPropagation(); starHandler(file) }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <motion.span
+            key={file.starred ? "filled" : "outline"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {file.starred ? <IoStar size={20} /> : <IoStarOutline size={20} />}
+          </motion.span>
+        </motion.button>
         </td>
       </tr>
   )}
@@ -77,7 +88,7 @@ export default function FileList({ files, path, selectedFileIds, setSelectedFile
 
   return (
     <div className="flex-1 overflow-hidden min-h-0">
-      {files === undefined ? (
+      {sortedFiles === undefined ? (
         <div className="flex-1 overflow-y-visible overflow-x-hidden h-full hide-scrollbar" aria-busy>
           <table className="w-full text-left text-gray-300 font-normal mt-1 border-collapse table-fixed select-none animate-pulse">
             <thead>
@@ -108,10 +119,10 @@ export default function FileList({ files, path, selectedFileIds, setSelectedFile
             </tbody>
           </table>
         </div>
-      ) : files.length === 0 ? (
+      ) : sortedFiles.length === 0 ? (
         <div className="text-gray-300">Папка пуста</div>
       ) : (
-        <div className="flex-1 overflow-y-visible overflow-x-hidden h-full hide-scrollbar">
+        <div className="flex-1 overflow-y-visible overflow-x-hidden h-full hide-scrollbar" onClick={() => setSelectedItems([])}>
           <table className="w-full text-left text-gray-300 font-normal mt-1 border-collapse table-fixed select-none">
             <thead>
               <tr className="text-xs">
@@ -123,23 +134,11 @@ export default function FileList({ files, path, selectedFileIds, setSelectedFile
               </tr>
             </thead>  
             <tbody>
-              {files.map(file => fileTemplate(file))}
+              {sortedFiles.map(file => fileTemplate(file))}
               <tr className="h-20"></tr>
             </tbody>
           </table>
         </div>
-      )}
-
-      {contextMenu.visible && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          file={contextMenu.file}
-          path={path}
-          onClose={() =>
-            setContextMenu(prev => ({ ...prev, visible: false }))
-          }
-        />
       )}
     </div>
 )}

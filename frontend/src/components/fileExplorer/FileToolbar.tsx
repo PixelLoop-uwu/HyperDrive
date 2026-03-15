@@ -1,31 +1,38 @@
-import type { SortField, SortOrder } from "@/types/sort"
+import type { SortField } from "@/types/sortSettings"
 import type { FileToolbarProps } from "@/types/fileExplorer"
+import { useSortSettingsStore } from "@/store/sortSettings"
+import { useFilesStore } from "@/store/fileExplorer"
+import { useSelectedFilesStore } from "@/store/selectedFileItems"
+import { useContextMenuStore } from "@/store/contextMenu"
 
 import { motion } from "framer-motion"
 import { HiOutlinePlus } from "react-icons/hi"
 import { IoStar, IoStarOutline, IoTrashOutline, IoPencilOutline } from "react-icons/io5"
 
 
-
-
-export default function FileToolbar({ title, path, sort, setSort, selectedFileIds }: FileToolbarProps) {
+export default function FileToolbar({ title }: FileToolbarProps) {
   const sortOptions: { id: SortField; label: string }[] = [
     { id: "name", label: "Имя" },
     { id: "date", label: "Дата изменения" },
     { id: "size", label: "Размер" }
   ]
 
-  function changeSort(field: SortField) {
-    setSort(prev => ({
-      ...prev,
-      field
-  }))}
+  const { order, field, setField, setOrder } = useSortSettingsStore()
+  const { tuneContextMenu, toggleContextMenu} = useContextMenuStore()
+  const { path }= useFilesStore()
+  const { selected } = useSelectedFilesStore()
 
-  function changeOrder(order: SortOrder) {
-    setSort(prev => ({
-      ...prev,
-      order
-  }))}
+
+  function openContextMenu (e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault() 
+    e.stopPropagation()
+
+    const x = e.clientX
+    const y = e.clientY
+
+    tuneContextMenu(x, y, "empty", null)
+    toggleContextMenu()
+  }
 
   return (
     <div>
@@ -38,12 +45,12 @@ export default function FileToolbar({ title, path, sort, setSort, selectedFileId
           {sortOptions.map(opt => (
             <button
               key={opt.id}
-              onClick={() => changeSort(opt.id)}
+              onClick={() => setField(opt.id)}
               className="relative pb-1"
             >
               {opt.label}
 
-              {sort.field === opt.id && (
+              {field === opt.id && (
                 <motion.div
                   layoutId="sort-field"
                   className="absolute left-0 right-0 bottom-0 h-0.5 bg-gray-400"
@@ -57,12 +64,12 @@ export default function FileToolbar({ title, path, sort, setSort, selectedFileId
         {/* направление сортировки */}
         <div className="flex gap-4 ml-6">
           <button
-            onClick={() => changeOrder("asc")}
+            onClick={() => setOrder("asc")}
             className="relative pb-1"
           >
             По возрастанию
 
-            {sort.order === "asc" && (
+            {order === "asc" && (
               <motion.div
                 layoutId="sort-order"
                 className="absolute left-0 right-0 bottom-0 h-0.5 bg-gray-400"
@@ -72,12 +79,12 @@ export default function FileToolbar({ title, path, sort, setSort, selectedFileId
           </button>
 
           <button
-            onClick={() => changeOrder("desc")}
+            onClick={() => setOrder("desc")}
             className="relative pb-1"
           >
             По убыванию
 
-            {sort.order === "desc" && (
+            {order === "desc" && (
               <motion.div
                 layoutId="sort-order"
                 className="absolute left-0 right-0 bottom-0 h-0.5 bg-gray-400"
@@ -88,19 +95,28 @@ export default function FileToolbar({ title, path, sort, setSort, selectedFileId
         </div>
 
         <div className="flex flex-1 justify-end gap-2">
-          <button className="hover:text-white" >
+          <button className="hover:text-white" onClick={(e) => openContextMenu(e)}>
             <HiOutlinePlus size={22} color="#d1d5dc" />
           </button>
-          <button disabled={selectedFileIds.some(el => el === "")}  className="disabled:opacity-50">
+          <button
+            disabled={selected.length !== 1}  
+            className="text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+          >
             <IoPencilOutline size={20} color="#d1d5dc" />
           </button>
-          <button disabled={selectedFileIds.some(el => el === "")}  className="disabled:opacity-50">
+          <button 
+            disabled={!selected.length}
+            className="text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+          >
             <IoStarOutline size={20} color="#d1d5dc" />
           </button>
-          <button disabled={selectedFileIds.some(el => el === "")}  className="disabled:opacity-50">
-            <IoTrashOutline size={20} color="#d1d5dc" />
+          <button
+            disabled={!selected.length}
+            className="text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+          >
+            <IoTrashOutline size={20} />
           </button>
-        </div>
+        </div>  
       </div>
     </div>
   )

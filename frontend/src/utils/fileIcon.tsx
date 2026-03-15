@@ -52,5 +52,5 @@ export function getFileIcon(file: FileItem): ReactElement {
     }
   }
 
-  return <Icon size={20} color="#d1d5dc" />
+  return <Icon size={20} />
 }

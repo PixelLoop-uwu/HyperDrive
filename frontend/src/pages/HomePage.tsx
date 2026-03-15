@@ -1,20 +1,18 @@
 import NavBar from "@/components/layout/NavBar"
 import SideBar from "@/components/layout/SideBar"
-import FileExplorer from "@/components/files/FileExplorer"
-
+import FileExplorer from "@/components/fileExplorer/FileExplorer"
+import { useFilesStore } from "@/store/fileExplorer"
 import type { FileItem } from "@/types/fileExplorer"
-import { useState, useEffect } from "react"
 
+import { useEffect } from "react"
 
-type FileExplorerData = {
-  files: FileItem[] | undefined
-  path: string[]
-}
 
 export default function HomePage() {
-  const [filesData, setFileData] = useState<FileExplorerData>({files: undefined, path: [""]})
+  const setFileData = useFilesStore(state => (state.setFileItems))
+  const setPath = useFilesStore(state => (state.setPath))
 
-  const files: FileItem[] = [
+
+  const items: FileItem[] = [
     {
       id: '1',
       name: 'document.txt',
@@ -22,7 +20,7 @@ export default function HomePage() {
       size: 1024,
       modified: 1677705600000,
       created: 1677629200000,
-      stared: false
+      starred: false
     },
     {
       id: '2',
@@ -31,7 +29,7 @@ export default function HomePage() {
       size: 0,
       modified: 1677792000000,
       created: 1677705600000,
-      stared: true
+      starred: true
     },
     {
       id: '3',
@@ -40,7 +38,7 @@ export default function HomePage() {
       size: 204800,
       modified: 1677878400000,
       created: 1677792000000,
-      stared: false
+      starred: false
     },
     {
       id: '4',
@@ -49,7 +47,7 @@ export default function HomePage() {
       size: 0,
       modified: 1677964800000,
       created: 1677878400000,
-      stared: true
+      starred: true
     },
     {
       id: '5',
@@ -58,7 +56,7 @@ export default function HomePage() {
       size: 51200,
       modified: 1678051200000,
       created: 1677964800000,
-      stared: false
+      starred: false
     },
     {
       id: '6',
@@ -67,7 +65,7 @@ export default function HomePage() {
       size: 10485760,
       modified: 1678137600000,
       created: 1678051200000,
-      stared: true
+      starred: true
     },
     {
       id: '7',
@@ -76,7 +74,7 @@ export default function HomePage() {
       size: 2097152,
       modified: 1678224000000,
       created: 1678137600000,
-      stared: false
+      starred: false
     },
     {
       id: '8',
@@ -85,7 +83,7 @@ export default function HomePage() {
       size: 0,
       modified: 1678310400000,
       created: 1678224000000,
-      stared: true
+      starred: true
     },
     {
       id: '9',
@@ -94,7 +92,7 @@ export default function HomePage() {
       size: 1536000,
       modified: 1678396800000,
       created: 1678310400000,
-      stared: false
+      starred: false
     },
     {
       id: '10',
@@ -103,7 +101,7 @@ export default function HomePage() {
       size: 4096,
       modified: 1678483200000,
       created: 1678396800000,
-      stared: true
+      starred: true
     },
     {
       id: '11',
@@ -112,7 +110,7 @@ export default function HomePage() {
       size: 0,
       modified: 1678569600000,
       created: 1678483200000,
-      stared: false
+      starred: false
     },
     {
       id: '12',
@@ -121,7 +119,7 @@ export default function HomePage() {
       size: 307200,
       modified: 1678656000000,
       created: 1678569600000,
-      stared: true
+      starred: true
     },
     {
       id: '13',
@@ -130,7 +128,7 @@ export default function HomePage() {
       size: 5242880,
       modified: 1678742400000,
       created: 1678656000000,
-      stared: false
+      starred: false
     },
     {
       id: '14',
@@ -139,7 +137,7 @@ export default function HomePage() {
       size: 1024,
       modified: 1678828800000,
       created: 1678742400000,
-      stared: true
+      starred: true
     },
     {
       id: '15',
@@ -148,12 +146,13 @@ export default function HomePage() {
       size: 0,
       modified: 1678915200000,
       created: 1678828800000,
-      stared: false
+      starred: false
     },
   ]
 
   useEffect(() => {
-    setFileData({ files, path: [""] })
+    setFileData(items)
+    setPath([""])
   }, [])
 
   return (
@@ -161,8 +160,8 @@ export default function HomePage() {
       <NavBar />
 
       <div className="flex row flex-1 min-h-0">
-        <SideBar />
-        <FileExplorer title="Мой диск" path={filesData.path} files={filesData.files} />
+        <SideBar usedSpace={10000000000} totalSpace={100000000000 } />
+        <FileExplorer title="Мой диск" />
       </div>
     </div>
   )

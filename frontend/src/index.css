@@ -12,3 +12,7 @@ body {
   display: none; 
 }
 
+*::selection {
+  background-color: #6a7282 ;
+}
+
