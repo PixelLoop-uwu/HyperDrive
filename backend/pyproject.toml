@@ -4,4 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "aiofiles>=25.1.0",
+    "aiosqlite>=0.22.1",
+    "bcrypt>=5.0.0",
+    "dotenv>=0.9.9",
+    "fastapi>=0.135.1",
+    "loguru>=0.7.3",
+    "python-jose>=3.5.0",
+    "sqlalchemy>=2.0.48",
+    "uvicorn>=0.42.0",
+]
