@@ -3,7 +3,6 @@ Pages:
   /register
 
   /home
-  /home/favorite
   /home/trash
   /home/settings
 
