@@ -1,4 +1,5 @@
 import { IoHomeOutline, IoStarOutline, IoTrashOutline } from "react-icons/io5";
+import { RiShareForward2Line } from "react-icons/ri";
 import { HiOutlinePlus } from "react-icons/hi";
 
 import { useContextMenuStore } from "@/store/contextMenu";
@@ -41,11 +42,19 @@ export default function SideBar({ usedSpace, totalSpace }: FileSideBarProps) {
       </button>
 
       <button
-        className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
+        className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors mt-2"
         onClick={() => navigate("/favorite")}  
       >
         <IoStarOutline className="h-5 w-5" color="#d1d5dc"/>
         <span>Избранное</span>
+      </button>
+
+      <button
+        onClick={() => navigate("/trash")}
+        className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors"
+      >
+        <RiShareForward2Line className="h-5 w-5" color="#d1d5dc"/>
+        <span>Общее</span>
       </button>
 
       <button

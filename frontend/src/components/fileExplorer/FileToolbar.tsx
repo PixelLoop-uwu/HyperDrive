@@ -7,7 +7,7 @@ import { useContextMenuStore } from "@/store/contextMenu"
 
 import { motion } from "framer-motion"
 import { HiOutlinePlus } from "react-icons/hi"
-import { IoStar, IoStarOutline, IoTrashOutline, IoPencilOutline } from "react-icons/io5"
+import { IoStarOutline, IoTrashOutline, IoPencilOutline } from "react-icons/io5"
 
 
 export default function FileToolbar({ title }: FileToolbarProps) {
@@ -103,12 +103,6 @@ export default function FileToolbar({ title }: FileToolbarProps) {
             className="text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
           >
             <IoPencilOutline size={20} color="#d1d5dc" />
-          </button>
-          <button 
-            disabled={!selected.length}
-            className="text-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-          >
-            <IoStarOutline size={20} color="#d1d5dc" />
           </button>
           <button
             disabled={!selected.length}
