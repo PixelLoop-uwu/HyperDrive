@@ -26,7 +26,7 @@ export default function PathBar({ title, currentPath, mode }: PathBarProps) {
         animate={{ opacity: 1, x: 0 }}
         className="flex items-center overflow-x-auto no-scrollbar "
       >
-        <button className="text-zinc-300 hover:text-zinc-100 transition-colors text-[27px] whitespace-nowrap">
+        <button className="text-zinc-300 font-medium hover:text-zinc-100 transition-colors text-[27px] whitespace-nowrap">
           {title}
         </button>
 
